@@ -24,8 +24,6 @@
   <ItemGroup>
     <!-- The high-resolution icon source is kept in the repository; the app uses the multi-size ICO. -->
     <AvaloniaResource Include="Assets\**" Exclude="Assets\AppIcon.png" />
-    <None Include="..\..\README.md" Link="README.md" CopyToPublishDirectory="PreserveNewest" />
-    <None Include="DistributionNotice.md" CopyToPublishDirectory="PreserveNewest" />
     <None Include="ThirdPartyNotices\**\*" CopyToPublishDirectory="PreserveNewest" />
     <PackageReference Include="Avalonia" Version="11.3.13" />
     <PackageReference Include="Avalonia.Desktop" Version="11.3.13" />

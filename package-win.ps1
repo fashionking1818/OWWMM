@@ -47,8 +47,8 @@ if (Test-Path -LiteralPath $bundledSource) {
     Remove-Item -LiteralPath $bundledSource -Force
 }
 foreach ($relativePath in @(
-    'OWWMM.exe', 'OWWMM.dll', 'OWWMM.runtimeconfig.json', 'README.md',
-    'DistributionNotice.md', 'ThirdPartyNotices\README.md',
+    'OWWMM.exe', 'OWWMM.dll', 'OWWMM.runtimeconfig.json',
+    'ThirdPartyNotices\NOTICE.md',
     'ThirdParty\7zip\win-x64\7z.exe', 'ThirdParty\7zip\win-x64\7z.dll'
 )) {
     $path = Join-Path $stageFullPath $relativePath
@@ -61,6 +61,15 @@ foreach ($name in @('config', 'src', 'tests', 'artifacts')) {
         throw "Unexpected package directory: $name"
     }
 }
+foreach ($name in @('README.md', 'DistributionNotice.md')) {
+    if (Test-Path -LiteralPath (Join-Path $stageFullPath $name)) {
+        throw "Repository documentation was included in the application package: $name"
+    }
+}
+$readmes = @(Get-ChildItem -LiteralPath $stageFullPath -File -Recurse | Where-Object {
+    $_.Name.Equals('README.md', [StringComparison]::OrdinalIgnoreCase)
+})
+if ($readmes.Count -gt 0) { throw 'A README was included in the application package.' }
 $debugSymbols = @(Get-ChildItem -LiteralPath $stageFullPath -Filter '*.pdb' -File -Recurse)
 if ($debugSymbols.Count -gt 0) { throw 'Debug symbols were included in the package.' }
 $nestedArchives = @(Get-ChildItem -LiteralPath $stageFullPath -File -Recurse | Where-Object {

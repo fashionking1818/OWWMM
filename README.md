@@ -25,10 +25,10 @@ dotnet build src/OWWMM/OWWMM.csproj -c Release
 dotnet publish src/OWWMM/OWWMM.csproj -c Release -r win-x64 --self-contained false -o artifacts/publish
 ```
 
-`start-win.cmd` can launch the application from source during development. Run `./package-win.ps1` to produce the Windows x64 ZIP, SHA-256 checksum and corresponding 7-Zip source archive under `artifacts/release`. Only the Windows x64 package has been built and verified; macOS and Linux packages are not provided.
+`start-win.cmd` can launch the application from source during development. Run `./package-win.ps1` to produce the Windows x64 ZIP, SHA-256 checksum and corresponding 7-Zip source archive under `artifacts/release`. The application ZIP contains runtime files and required third-party license notices, not repository documentation. Only the Windows x64 package has been built and verified; macOS and Linux packages are not provided.
 
 ## Source and third-party notices
 
-This repository provides the source for inspection and building. OWWMM code and artwork are not licensed for reuse or redistribution unless a separate license grants those rights. Included third-party components retain their own licenses; see [7-Zip notices](src/OWWMM/ThirdParty/7zip/NOTICE.md), [other dependency notices](src/OWWMM/ThirdPartyNotices/README.md), and the [distribution notice](src/OWWMM/DistributionNotice.md). The application icon and substantial application code were made with generative AI assistance.
+This repository provides the source for inspection and building. OWWMM code and artwork are not licensed for reuse or redistribution unless a separate license grants those rights. Included third-party components retain their own licenses; see [7-Zip notices](src/OWWMM/ThirdParty/7zip/NOTICE.md), [other dependency notices](src/OWWMM/ThirdPartyNotices/NOTICE.md), and the [distribution notice](src/OWWMM/DistributionNotice.md). The application icon and substantial application code were made with generative AI assistance.
 
 OWWMM is a community tool and is not affiliated with or endorsed by Kuro Games.

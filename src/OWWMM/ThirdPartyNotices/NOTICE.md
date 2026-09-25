@@ -11,4 +11,4 @@ This distribution contains the following NuGet packages and their transitive com
 
 The MIT license text and applicable copyright notices are reproduced in `MIT-LICENSES.txt`.
 
-7-Zip is included under `../ThirdParty/7zip` with its license, notices, RAR restriction notice and corresponding source archive. The packaging script also places the source archive beside the Windows application archive.
+7-Zip is included under `../ThirdParty/7zip` with its license, notices and RAR restriction notice. The packaging script places its corresponding source archive beside the Windows application archive.
