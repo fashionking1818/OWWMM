@@ -1,0 +1,242 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:models="using:OWWMM.Models"
+        x:Class="OWWMM.MainWindow"
+        Title="One WuWa Mod Manager"
+        Icon="/Assets/AppIcon.ico"
+        Width="1320" Height="820"
+        MinWidth="1080" MinHeight="680"
+        WindowStartupLocation="CenterScreen">
+  <Grid x:Name="RootLayout" RowDefinitions="Auto,*,Auto" Margin="18"
+        DragDrop.AllowDrop="True" DragDrop.DragOver="OnRootDragOver" DragDrop.Drop="OnRootDrop">
+    <Border Grid.Row="0" Classes="panel" Padding="18,14" Margin="0,0,0,14">
+      <Grid ColumnDefinitions="Auto,*,Auto,Auto,Auto" ColumnSpacing="10">
+        <StackPanel Grid.Column="0" Margin="0,0,14,0" VerticalAlignment="Center">
+          <TextBlock Text="One WuWa Mod Manager" FontSize="18" FontWeight="Bold" Foreground="#B7ACFF" />
+          <TextBlock x:Name="HeaderSubtitleText" Text="OWWMM · 按分组管理 WWMI 模组" FontSize="11" Foreground="#8D93A5" />
+        </StackPanel>
+        <TextBox x:Name="RootPathTextBox" Grid.Column="1" IsReadOnly="True"
+                 Watermark="请选择 WWMI\Mods 文件夹" VerticalContentAlignment="Center" />
+        <Button x:Name="ChooseFolderButton" Grid.Column="2" Content="选择文件夹" Classes="accent"
+                ToolTip.Tip="选择成功后会自动保存，下次启动优先恢复此目录" Click="OnChooseFolderClick" />
+        <Button x:Name="RefreshButton" Grid.Column="3" Content="刷新" Click="OnRefreshClick" />
+        <Button x:Name="LanguageButton" Grid.Column="4" Classes="icon-button"
+                ToolTip.Tip="切换界面语言" Click="OnLanguageClick">
+          <Grid Width="18" Height="18">
+            <Ellipse Width="16" Height="16" Stroke="#E6E9F2" StrokeThickness="1.4"
+                     HorizontalAlignment="Center" VerticalAlignment="Center" />
+            <Path Data="M 2,9 L 16,9 M 9,1 C 5,5 5,13 9,17 M 9,1 C 13,5 13,13 9,17"
+                  Stroke="#E6E9F2" StrokeThickness="1.2" />
+          </Grid>
+        </Button>
+      </Grid>
+    </Border>
+
+    <Grid x:Name="PanelsGrid" Grid.Row="1">
+      <Grid.ColumnDefinitions>
+        <ColumnDefinition Width="250" MinWidth="220" />
+        <ColumnDefinition Width="10" MinWidth="10" />
+        <ColumnDefinition Width="330" MinWidth="280" />
+        <ColumnDefinition Width="10" MinWidth="10" />
+        <ColumnDefinition Width="*" MinWidth="420" />
+      </Grid.ColumnDefinitions>
+      <Border Grid.Column="0" Classes="panel" Padding="14">
+        <Grid RowDefinitions="Auto,Auto,Auto,*,Auto">
+          <Grid Margin="4,2,4,8">
+            <StackPanel>
+              <TextBlock x:Name="CharacterHeaderText" Text="Mod" FontSize="18" FontWeight="SemiBold" />
+            </StackPanel>
+          </Grid>
+          <StackPanel Grid.Row="1" Orientation="Horizontal" Spacing="6" Margin="4,0,4,8">
+            <Button x:Name="AddModGroupButton" Content="＋" Classes="icon-button compact"
+                    VerticalAlignment="Center" Click="OnAddModGroupClick"
+                    AutomationProperties.Name="新建 Mod 分组"
+                    ToolTip.Tip="新建 Mod 分组" />
+          </StackPanel>
+          <TextBox x:Name="CharacterSearchTextBox" Grid.Row="2" Watermark="搜索 Mod 或角色…" Margin="0,0,0,10"
+                   TextChanged="OnCharacterSearchTextChanged" />
+          <ListBox x:Name="CharacterListBox" Grid.Row="3" SelectionChanged="OnCharacterSelectionChanged"
+                   PointerPressed="OnCharacterListPointerPressed">
+            <ListBox.ContextMenu>
+              <ContextMenu>
+                <MenuItem x:Name="EditGroupMenuItem" Header="编辑分组…" Click="OnRenameModGroupClick" />
+                <MenuItem x:Name="ResetGroupIconMenuItem" Header="重置分组图标" Click="OnResetGroupIconClick" />
+                <Separator />
+                <MenuItem x:Name="DeleteGroupMenuItem" Header="删除空分组" Click="OnDeleteModGroupClick" />
+              </ContextMenu>
+            </ListBox.ContextMenu>
+            <ListBox.ItemTemplate>
+              <DataTemplate x:DataType="models:CharacterEntry">
+                <Grid ColumnDefinitions="48,*" ColumnSpacing="11">
+                  <Border Width="46" Height="46" CornerRadius="23" ClipToBounds="True" Cursor="Hand"
+                          Background="#242936" BorderBrush="#454C60" BorderThickness="1"
+                          ToolTip.Tip="{Binding IconTooltip}"
+                          Focusable="True" AutomationProperties.Name="{Binding IconTooltip}"
+                          PointerPressed="OnCategoryIconPointerPressed" KeyDown="OnCategoryIconKeyDown">
+                    <Grid>
+                      <TextBlock Text="{Binding AvatarFallbackText}" HorizontalAlignment="Center"
+                                 VerticalAlignment="Center" FontSize="17" FontWeight="SemiBold"
+                                 Foreground="#8E96AA" />
+                      <Image Source="{Binding AvatarImage}" Stretch="UniformToFill" />
+                    </Grid>
+                  </Border>
+                  <StackPanel Grid.Column="1" VerticalAlignment="Center">
+                    <TextBlock Text="{Binding DisplayName}" FontWeight="SemiBold" TextTrimming="CharacterEllipsis" />
+                    <TextBlock Text="{Binding Subtitle}" IsVisible="{Binding ShowSubtitle}" FontSize="10" Foreground="#9299AA"
+                               TextTrimming="CharacterEllipsis" />
+                    <TextBlock Text="{Binding AvailabilityText}" FontSize="10" Foreground="#6F7688"
+                               TextTrimming="CharacterEllipsis" />
+                  </StackPanel>
+                </Grid>
+              </DataTemplate>
+            </ListBox.ItemTemplate>
+          </ListBox>
+          <TextBlock x:Name="CharacterStructureHintText" Grid.Row="4" Margin="4,12,4,2" TextWrapping="Wrap" FontSize="11" Foreground="#6F7688"
+                     Text="WWMI\Mods 下的一级目录是分组；其中的直属子目录是 Mod。" />
+        </Grid>
+      </Border>
+
+      <GridSplitter Grid.Column="1" ResizeDirection="Columns" ResizeBehavior="PreviousAndNext"
+                    HorizontalAlignment="Stretch" VerticalAlignment="Stretch" />
+
+      <Border Grid.Column="2" Classes="panel" Padding="14">
+        <Grid RowDefinitions="Auto,Auto,*">
+          <Grid Margin="4,2,4,10" ColumnDefinitions="*,Auto">
+            <StackPanel>
+              <TextBlock x:Name="ModPanelTitle" Text="Mod" FontSize="18" FontWeight="SemiBold" />
+              <TextBlock x:Name="ModCountText" Text="请选择 Mod 分组" FontSize="12" Foreground="#8D93A5" />
+            </StackPanel>
+            <Button x:Name="ImportModButton" Grid.Column="1" Content="导入 Mod" Classes="accent"
+                    VerticalAlignment="Center" Click="OnImportModClick" />
+          </Grid>
+          <TextBox x:Name="SearchTextBox" Grid.Row="1" Watermark="搜索 Mod…" Margin="0,0,0,10"
+                   TextChanged="OnSearchTextChanged" />
+          <ListBox x:Name="ModListBox" Grid.Row="2" SelectionMode="Multiple"
+                   SelectionChanged="OnModSelectionChanged" ToolTip.Tip="使用 Ctrl 或 Shift 多选 Mod"
+                   PointerPressed="OnModListPointerPressed">
+            <ListBox.ContextMenu>
+              <ContextMenu>
+                <MenuItem x:Name="ActivateModsMenuItem" Header="激活所选" Click="OnActivateSelectedClick" />
+                <MenuItem x:Name="DisableModsMenuItem" Header="停用所选" Click="OnDisableSelectedClick" />
+                <Separator />
+                <MenuItem x:Name="OpenModFolderMenuItem" Header="打开目录" Click="OnOpenModFolderClick" />
+                <MenuItem x:Name="MoveModsMenuItem" Header="移动到分组…" Click="OnMoveSelectedClick" />
+                <Separator />
+                <MenuItem x:Name="DeleteModMenuItem" Header="删除 Mod" Click="OnDeleteModClick" />
+              </ContextMenu>
+            </ListBox.ContextMenu>
+            <ListBox.ItemTemplate>
+              <DataTemplate x:DataType="models:ModEntry">
+                <Grid ColumnDefinitions="Auto,*" ColumnSpacing="10">
+                  <ToggleSwitch Grid.Column="0" IsChecked="{Binding IsEnabled}" Click="OnModToggleClick"
+                                OnContent="" OffContent="" VerticalAlignment="Center" />
+                  <TextBlock Grid.Column="1" Text="{Binding DisplayName}" FontWeight="SemiBold"
+                             VerticalAlignment="Center" TextTrimming="CharacterEllipsis" />
+                </Grid>
+              </DataTemplate>
+            </ListBox.ItemTemplate>
+          </ListBox>
+        </Grid>
+      </Border>
+
+      <GridSplitter Grid.Column="3" ResizeDirection="Columns" ResizeBehavior="PreviousAndNext"
+                    HorizontalAlignment="Stretch" VerticalAlignment="Stretch" />
+
+      <Border Grid.Column="4" Classes="panel" Padding="16">
+        <Grid RowDefinitions="Auto,3*,Auto,2*">
+          <Grid Grid.Row="0" ColumnDefinitions="*,Auto,Auto" ColumnSpacing="8" Margin="4,0,4,12">
+            <StackPanel>
+              <TextBox x:Name="ModNameTextBox" Text="" Watermark="选择一个 Mod" FontSize="18" FontWeight="Bold"
+                       IsEnabled="False" Padding="8,5" />
+              <TextBlock x:Name="DetailPathText" Text="预览图和说明会显示在这里" FontSize="11"
+                         Foreground="#7E8597" TextTrimming="CharacterEllipsis" />
+            </StackPanel>
+            <Button x:Name="SaveModNameButton" Grid.Column="1" Content="保存名称" IsEnabled="False"
+                    VerticalAlignment="Center" Click="OnSaveModNameClick" />
+            <Border Grid.Column="2" Background="#252A37" CornerRadius="12" Padding="10,5" VerticalAlignment="Center">
+              <TextBlock x:Name="DetailStateText" Text="未选择" FontSize="12" />
+            </Border>
+          </Grid>
+
+          <Border Grid.Row="1" Background="#090B10" CornerRadius="12" ClipToBounds="True" MinHeight="250">
+            <Border.ContextMenu>
+              <ContextMenu>
+                <MenuItem x:Name="DeleteImageMenuItem" Header="删除当前图片" Click="OnDeleteImageClick" />
+              </ContextMenu>
+            </Border.ContextMenu>
+            <Grid>
+              <Image x:Name="PreviewImageControl" Stretch="Uniform" Margin="8" Cursor="Hand" Focusable="True"
+                     AutomationProperties.Name="打开全屏预览"
+                     PointerPressed="OnPreviewImageClick" KeyDown="OnPreviewImageKeyDown" />
+              <TextBlock x:Name="NoPreviewText" Text="暂无预览图&#x0a;点击下方“添加图片”"
+                         TextAlignment="Center" Foreground="#666E82" FontSize="16"
+                         HorizontalAlignment="Center" VerticalAlignment="Center" />
+              <Border HorizontalAlignment="Center" VerticalAlignment="Bottom" Margin="12"
+                      Background="#CC151821" CornerRadius="10" Padding="10,5">
+                <TextBlock x:Name="PreviewPositionText" Text="0 / 0" FontSize="11" />
+              </Border>
+            </Grid>
+          </Border>
+
+          <Grid Grid.Row="2" ColumnDefinitions="Auto,Auto,*,Auto" ColumnSpacing="8" Margin="0,10,0,12">
+            <Button x:Name="PreviousImageButton" Grid.Column="0" Content="‹ 上一张" IsEnabled="False" Click="OnPreviousImageClick" />
+            <Button x:Name="NextImageButton" Grid.Column="1" Content="下一张 ›" IsEnabled="False" Click="OnNextImageClick" />
+            <TextBlock x:Name="PreviewFileNameText" Grid.Column="2" VerticalAlignment="Center"
+                       Foreground="#8D93A5" TextTrimming="CharacterEllipsis" />
+            <Button x:Name="AddImagesButton" Grid.Column="3" Content="添加图片" Classes="accent" Click="OnAddImagesClick" />
+          </Grid>
+
+          <Grid Grid.Row="3" RowDefinitions="Auto,*" MinHeight="180">
+            <Grid ColumnDefinitions="*,Auto" Margin="2,0,2,8">
+              <StackPanel Orientation="Horizontal" Spacing="8" VerticalAlignment="Center">
+                <TextBlock x:Name="ReadmeHeaderText" Text="README" FontSize="16" FontWeight="SemiBold" />
+                <TextBlock x:Name="ReadmeDirtyText" Text="" Foreground="#FFCF70" FontSize="11" VerticalAlignment="Center" />
+              </StackPanel>
+              <Button x:Name="SaveReadmeButton" Grid.Column="1" Content="保存说明" Classes="accent" Click="OnSaveReadmeClick" />
+            </Grid>
+            <TextBox x:Name="ReadmeTextBox" Grid.Row="1" AcceptsReturn="True" TextWrapping="Wrap"
+                     IsEnabled="False" AutomationProperties.Name="README"
+                     ScrollViewer.VerticalScrollBarVisibility="Auto" Watermark="在这里编写 Preview/readme.txt…"
+                     Padding="12" TextChanged="OnReadmeTextChanged" />
+          </Grid>
+        </Grid>
+      </Border>
+    </Grid>
+
+    <Grid Grid.Row="2" ColumnDefinitions="*,Auto" Margin="4,10,4,0">
+      <TextBlock x:Name="StatusText" Text="准备就绪" FontSize="12" Foreground="#8D93A5"
+                 TextTrimming="CharacterEllipsis" ToolTip.Tip="{Binding Text, RelativeSource={RelativeSource Self}}" />
+      <TextBlock x:Name="FooterHintText" Grid.Column="1" Text="切换后重新加载 WWMI（F10）或重启游戏生效" FontSize="11" Foreground="#666E82" />
+    </Grid>
+
+    <Border x:Name="FullscreenPreviewOverlay" Grid.RowSpan="3" Margin="-18" ZIndex="100"
+            Background="#F20A0C12" IsVisible="False" ClipToBounds="True"
+            Focusable="True"
+            PointerWheelChanged="OnFullscreenPointerWheelChanged">
+      <Grid RowDefinitions="Auto,*">
+        <Grid Grid.Row="0" ColumnDefinitions="*,Auto" Margin="22,18,22,8" ZIndex="20">
+          <Border Background="#CC151821" CornerRadius="10" Padding="11,6" HorizontalAlignment="Left">
+            <TextBlock x:Name="FullscreenPositionText" Text="0 / 0" FontSize="12" Foreground="#B6BDCE" />
+          </Border>
+          <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="8">
+            <Button x:Name="FullscreenZoomOutButton" Content="−" Classes="viewer" AutomationProperties.Name="缩小" ToolTip.Tip="缩小" Click="OnFullscreenZoomOutClick" />
+            <Button x:Name="FullscreenZoomInButton" Content="＋" Classes="viewer" AutomationProperties.Name="放大" ToolTip.Tip="放大" Click="OnFullscreenZoomInClick" />
+            <Button x:Name="FullscreenCloseButton" Content="×" Classes="viewer" AutomationProperties.Name="关闭" ToolTip.Tip="关闭 (Esc)" Click="OnFullscreenCloseClick" />
+          </StackPanel>
+        </Grid>
+        <Grid Grid.Row="1" Margin="18,0,18,18" ClipToBounds="True">
+          <Image x:Name="FullscreenImageControl" Stretch="Uniform" Margin="54,4"
+                 IsHitTestVisible="False" ZIndex="0" />
+          <Button x:Name="FullscreenPreviousButton" HorizontalAlignment="Left" VerticalAlignment="Center" Content="‹" Classes="viewer arrow" IsEnabled="False" AutomationProperties.Name="上一张"
+                  ToolTip.Tip="上一张" Click="OnFullscreenPreviousClick" ZIndex="10" />
+          <Button x:Name="FullscreenNextButton" HorizontalAlignment="Right" VerticalAlignment="Center" Content="›" Classes="viewer arrow" IsEnabled="False" AutomationProperties.Name="下一张"
+                  ToolTip.Tip="下一张" Click="OnFullscreenNextClick" ZIndex="10" />
+          <Border HorizontalAlignment="Center" VerticalAlignment="Bottom" Margin="10"
+                  Background="#CC151821" CornerRadius="10" Padding="12,6" ZIndex="10">
+            <TextBlock x:Name="FullscreenFileNameText" Foreground="#A7AEC0" FontSize="11" />
+          </Border>
+        </Grid>
+      </Grid>
+    </Border>
+  </Grid>
+</Window>

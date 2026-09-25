@@ -1,0 +1,50 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net10.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <ApplicationManifest>app.manifest</ApplicationManifest>
+    <AvaloniaUseCompiledBindingsByDefault>false</AvaloniaUseCompiledBindingsByDefault>
+    <PublishDir>$(MSBuildThisFileDirectory)..\..\artifacts\publish\</PublishDir>
+    <Version>0.1.0</Version>
+    <AssemblyVersion>0.1.0.0</AssemblyVersion>
+    <FileVersion>0.1.0.0</FileVersion>
+    <InformationalVersion>$(Version)</InformationalVersion>
+    <AssemblyTitle>One WuWa Mod Manager</AssemblyTitle>
+    <Product>One WuWa Mod Manager</Product>
+    <Description>A portable WWMI Mod manager with previews, grouped activation and archive import.</Description>
+    <Company>OWWMM contributors</Company>
+    <Copyright>Copyright © 2026 OWWMM contributors</Copyright>
+    <ApplicationIcon Condition="'$(RuntimeIdentifier)' == 'win-x64' Or $([MSBuild]::IsOSPlatform('Windows'))">Assets\AppIcon.ico</ApplicationIcon>
+    <DebugType Condition="'$(Configuration)' == 'Release'">none</DebugType>
+    <DebugSymbols Condition="'$(Configuration)' == 'Release'">false</DebugSymbols>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <!-- The high-resolution icon source is kept in the repository; the app uses the multi-size ICO. -->
+    <AvaloniaResource Include="Assets\**" Exclude="Assets\AppIcon.png" />
+    <None Include="..\..\README.md" Link="README.md" CopyToPublishDirectory="PreserveNewest" />
+    <None Include="DistributionNotice.md" CopyToPublishDirectory="PreserveNewest" />
+    <None Include="ThirdPartyNotices\**\*" CopyToPublishDirectory="PreserveNewest" />
+    <PackageReference Include="Avalonia" Version="11.3.13" />
+    <PackageReference Include="Avalonia.Desktop" Version="11.3.13" />
+    <PackageReference Include="Avalonia.Fonts.Inter" Version="11.3.13" />
+    <PackageReference Include="Avalonia.Themes.Simple" Version="11.3.13" />
+    <PackageReference Include="SkiaSharp" Version="2.88.9" />
+    <PackageReference Include="Tmds.DBus.Protocol" Version="0.93.0" />
+    <PackageReference Include="Avalonia.Diagnostics" Version="11.3.13">
+      <IncludeAssets Condition="'$(Configuration)' != 'Debug'">None</IncludeAssets>
+      <PrivateAssets Condition="'$(Configuration)' != 'Debug'">All</PrivateAssets>
+    </PackageReference>
+  </ItemGroup>
+
+  <ItemGroup Condition="'$(RuntimeIdentifier)' == 'win-x64' Or ('$(RuntimeIdentifier)' == '' And $([MSBuild]::IsOSPlatform('Windows')))">
+    <None Update="ThirdParty\7zip\**\*" CopyToOutputDirectory="PreserveNewest" CopyToPublishDirectory="PreserveNewest" />
+  </ItemGroup>
+  <Target Name="ValidateBundledSevenZip" BeforeTargets="PrepareForBuild"
+          Condition="'$(RuntimeIdentifier)' == 'win-x64' Or ('$(RuntimeIdentifier)' == '' And $([MSBuild]::IsOSPlatform('Windows')))">
+    <Error Condition="!Exists('$(MSBuildProjectDirectory)\ThirdParty\7zip\win-x64\7z.exe') Or !Exists('$(MSBuildProjectDirectory)\ThirdParty\7zip\win-x64\7z.dll')"
+           Text="Bundled 7-Zip is missing. Restore src/OWWMM/ThirdParty/7zip before building the Windows distribution." />
+  </Target>
+</Project>
