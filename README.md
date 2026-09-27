@@ -12,7 +12,7 @@ OWWMM is a portable, unofficial WWMI Mod manager for Wuthering Waves, built with
 
 ## Install and use
 
-Extract the entire Windows x64 application archive and run `OWWMM.exe`. The .NET 10 Runtime (x64) is required; Windows offers a download link if it is missing. On first launch, choose a language and your `WWMI/Mods` folder. For a portable relative path, place the OWWMM folder next to `WWMI`.
+Extract the entire Windows x64 application archive and run `OWWMM.exe`. The .NET 10 Runtime (x64) is required; Windows offers a download link if it is missing. On first launch, choose a language and manually select your `WWMI/Mods` folder. The app does not search for a Mod folder automatically; it reopens the folder you selected on later launches. For a portable relative path, place the OWWMM folder next to `WWMI`.
 
 The left panel shows folders immediately under `WWMI/Mods` as groups. The middle panel shows each group's direct child folders as Mods. A top-level folder containing a Mod INI can also appear in the virtual ungrouped group. You decide which group each Mod belongs to.
 

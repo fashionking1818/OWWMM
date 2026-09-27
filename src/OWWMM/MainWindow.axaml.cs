@@ -120,8 +120,10 @@ public partial class MainWindow : Window
         {
             var savedLanguage = _settingsService.LoadLanguage();
             var savedRoot = _settingsService.LoadLastRoot();
-            var initial = savedRoot ?? FindLikelyModsRoot();
-            if (initial is not null) LoadRoot(initial);
+            // Reopen only a folder that the user explicitly selected and
+            // saved. Do not scan nearby directories and guess a WWMI\Mods
+            // location during startup.
+            if (savedRoot is not null) LoadRoot(savedRoot);
             if (savedLanguage is null)
             {
                 var selectedLanguage = await LanguageDialog.ShowAsync(this, _text);
@@ -1826,9 +1828,6 @@ public partial class MainWindow : Window
         StatusText.Text = _text.TranslateError(message);
         StatusText.Foreground = error ? Brushes.LightCoral : Brushes.LightSlateGray;
     }
-
-    private static string? FindLikelyModsRoot()
-        => ModService.FindRelativeCharactersRoot(new[] { AppContext.BaseDirectory, Environment.CurrentDirectory });
 }
 
 internal static class ConfirmDialog

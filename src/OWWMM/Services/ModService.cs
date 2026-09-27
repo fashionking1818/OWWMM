@@ -13,32 +13,6 @@ public sealed partial class ModService
         ".png", ".jpg", ".jpeg", ".bmp", ".gif", ".webp"
     };
 
-    public static string? FindRelativeCharactersRoot(IEnumerable<string> startPaths, int maximumAncestors = 10)
-    {
-        var comparison = OperatingSystem.IsWindows() ? StringComparer.OrdinalIgnoreCase : StringComparer.Ordinal;
-        foreach (var start in startPaths.Where(path => !string.IsNullOrWhiteSpace(path)).Distinct(comparison))
-        {
-            DirectoryInfo? current;
-            try { current = new DirectoryInfo(Path.GetFullPath(start)); }
-            catch { continue; }
-
-            for (var i = 0; current is not null && i < maximumAncestors; i++, current = current.Parent)
-            {
-                var candidates = new[]
-                {
-                    current.Name.Equals("Mods", StringComparison.OrdinalIgnoreCase)
-                        ? current.FullName
-                        : string.Empty,
-                    Path.Combine(current.FullName, "WWMI", "Mods"),
-                    Path.Combine(current.FullName, "Mods")
-                };
-                var match = candidates.FirstOrDefault(Directory.Exists);
-                if (!string.IsNullOrEmpty(match)) return Path.GetFullPath(match);
-            }
-        }
-        return null;
-    }
-
     public string ResolveCharactersRoot(string selectedPath)
     {
         if (string.IsNullOrWhiteSpace(selectedPath)) throw new ArgumentException("目录不能为空。", nameof(selectedPath));
