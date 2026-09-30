@@ -25,7 +25,7 @@ dotnet build src/OWWMM/OWWMM.csproj -c Release
 dotnet publish src/OWWMM/OWWMM.csproj -c Release -r win-x64 --self-contained false -o artifacts/publish
 ```
 
-`start-win.cmd` can launch the application from source during development. Run `./package-win.ps1` to produce the Windows x64 ZIP, SHA-256 checksum and corresponding 7-Zip source archive under `artifacts/release`. The application ZIP contains runtime files and required third-party license notices, not repository documentation. Only the Windows x64 package has been built and verified; macOS and Linux packages are not provided.
+`start-win.cmd` can launch the application from source during development. Run `./package-win.ps1` to produce the Windows x64 ZIP, SHA-256 checksum and corresponding 7-Zip source archive under `artifacts/release`. The application ZIP contains runtime files, the MIT License and required third-party license notices. It does not include the repository README. Only the Windows x64 package has been built and verified; macOS and Linux packages are not provided.
 
 ## License and third-party notices
 
