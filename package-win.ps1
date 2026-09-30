@@ -48,7 +48,7 @@ if (Test-Path -LiteralPath $bundledSource) {
 }
 foreach ($relativePath in @(
     'OWWMM.exe', 'OWWMM.dll', 'OWWMM.runtimeconfig.json',
-    'ThirdPartyNotices\NOTICE.md',
+    'LICENSE', 'ThirdPartyNotices\NOTICE.md',
     'ThirdParty\7zip\win-x64\7z.exe', 'ThirdParty\7zip\win-x64\7z.dll'
 )) {
     $path = Join-Path $stageFullPath $relativePath
