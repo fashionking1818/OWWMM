@@ -176,7 +176,6 @@ public partial class MainWindow : Window
         RootPathTextBox.Watermark = _text.RootPathWatermark;
         ChooseFolderButton.Content = _charactersRoot is null ? _text.ChooseFolder : _text.ChangeFolder;
         ToolTip.SetTip(ChooseFolderButton, _text.ChooseFolderTooltip);
-        ToolTip.SetTip(RootLayout, _text.DropArchiveTooltip);
         RefreshButton.Content = _text.Refresh;
         ToolTip.SetTip(LanguageButton, _text.LanguageTooltip);
         Avalonia.Automation.AutomationProperties.SetName(LanguageButton, _text.LanguageTooltip);
@@ -192,7 +191,6 @@ public partial class MainWindow : Window
         ActivateModsMenuItem.Header = _text.ActivateSelected;
         DisableModsMenuItem.Header = _text.DisableSelected;
         MoveModsMenuItem.Header = _text.MoveSelected;
-        ToolTip.SetTip(ModListBox, _text.BatchSelectionTooltip);
         SearchTextBox.Watermark = _text.SearchModWatermark;
         ModNameTextBox.Watermark = _text.SelectModWatermark;
         SaveModNameButton.Content = _text.SaveName;
@@ -865,7 +863,14 @@ public partial class MainWindow : Window
     }
 
     private void OnCharacterSearchTextChanged(object? sender, TextChangedEventArgs e)
-        => ApplyCharacterFilter(_activeCharacter);
+    {
+        if (!SaveReadmeIfDirty(showStatus: true)) return;
+        ApplyCharacterFilter(_activeCharacter);
+        if (CharacterListBox.SelectedItem is null && CharacterListBox.ItemCount > 0)
+            CharacterListBox.SelectedIndex = 0;
+        else
+            ApplyFilter();
+    }
 
     private void ApplyCharacterFilter(CharacterEntry? preferredSelection = null)
     {
@@ -896,15 +901,30 @@ public partial class MainWindow : Window
             || Path.GetFileName(character.DirectoryPath).Contains(query, StringComparison.CurrentCultureIgnoreCase))
             return true;
 
-        return false;
+        if (character.IsPathOccupiedByRootMod) return false;
+        try
+        {
+            return _modService.ScanMods(character.DirectoryPath, character.IsUngroupedGroup)
+                .Any(mod => mod.DisplayName.Contains(query, StringComparison.CurrentCultureIgnoreCase));
+        }
+        catch (IOException) { return false; }
+        catch (UnauthorizedAccessException) { return false; }
     }
 
     private void ApplyFilter()
     {
         var query = SearchTextBox.Text?.Trim() ?? string.Empty;
+        var globalQuery = CharacterSearchTextBox.Text?.Trim() ?? string.Empty;
+        var groupMatches = _activeCharacter is not null &&
+            (_activeCharacter.Title.Contains(globalQuery, StringComparison.CurrentCultureIgnoreCase)
+             || _activeCharacter.Subtitle.Contains(globalQuery, StringComparison.CurrentCultureIgnoreCase)
+             || _activeCharacter.FolderName.Contains(globalQuery, StringComparison.CurrentCultureIgnoreCase));
+        var matchingMods = _allMods.Where(mod => globalQuery.Length == 0 ||
+            (CharacterListBox.SelectedItem is not null && (groupMatches
+            || mod.DisplayName.Contains(globalQuery, StringComparison.CurrentCultureIgnoreCase))));
         var filtered = string.IsNullOrEmpty(query)
-            ? _allMods.ToList()
-            : _allMods.Where(mod => mod.DisplayName.Contains(query, StringComparison.CurrentCultureIgnoreCase)).ToList();
+            ? matchingMods.ToList()
+            : matchingMods.Where(mod => mod.DisplayName.Contains(query, StringComparison.CurrentCultureIgnoreCase)).ToList();
         ModListBox.ItemsSource = filtered;
         ModCountText.Text = query.Length == 0 ? _text.ModCount(filtered.Count) : _text.FilteredModCount(filtered.Count, _allMods.Count);
     }

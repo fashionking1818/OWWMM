@@ -112,7 +112,7 @@
           <TextBox x:Name="SearchTextBox" Grid.Row="1" Watermark="搜索 Mod…" Margin="0,0,0,10"
                    TextChanged="OnSearchTextChanged" />
           <ListBox x:Name="ModListBox" Grid.Row="2" SelectionMode="Multiple"
-                   SelectionChanged="OnModSelectionChanged" ToolTip.Tip="使用 Ctrl 或 Shift 多选 Mod"
+                   SelectionChanged="OnModSelectionChanged"
                    PointerPressed="OnModListPointerPressed">
             <ListBox.ContextMenu>
               <ContextMenu>
